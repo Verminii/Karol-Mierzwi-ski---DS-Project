@@ -17,7 +17,7 @@ const getters = {
         return state.poast.covers
     },
     getAllSongs: function (state) {
-        return state.poast.songs
+        return state.poast.files
     },
 }
 
@@ -43,7 +43,7 @@ const mutations = {
     SET_POSTS(state, poast) {
         state.poast.albums = poast.albums
         state.poast.covers = poast.covers
-        state.poast.songs = poast.songs
+        state.poast.files = poast.files
     }
 }
 

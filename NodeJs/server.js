@@ -20,7 +20,6 @@ var server = http.createServer(function (req, res) {
             handleGet(req, res)
             break;
         case "POST":
-            //nie moge nic console logwoac nie wiem dlaczego
             req.on("data", function (data) {
                 info += data;
             })
@@ -28,10 +27,16 @@ var server = http.createServer(function (req, res) {
             req.on("end", function () {
                 info = JSON.parse(info)
                 console.log(info)
-                fileNames(info, () => {
-                    handleGet(req, res)
-                })
-
+                if (url === '/') {
+                    res.setHeader('Access-Control-Allow-Origin', '*')
+                    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+                    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type')
+                    res.setHeader('Access-Control-Allow-Credentials', true)
+                    res.setHeader("Content-Type", 'application/json')
+                    res.writeHead(200)
+                    fileNames(info)
+                    res.end(JSON.stringify(lista, null, 4))
+                }
             })
             break;
     }
@@ -41,7 +46,7 @@ server.listen(3000, function () {
     console.log("serwer startuje na porcie 3000")
 });
 
-function fileNames(info, callback) {
+function fileNames(info) {
     if (info != undefined) {
         let i = 0
         lista = { info: "", dires: [], files: [], covers: [] }
@@ -91,7 +96,6 @@ function fileNames(info, callback) {
             }
         });
     }
-    callback()
 }
 
 function handleGet(req, res) {
@@ -100,14 +104,7 @@ function handleGet(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type')
     res.setHeader('Access-Control-Allow-Credentials', true)
-    if (url === '/') {
-        console.log("tak")
-        res.setHeader("Content-Type", 'application/json')
-        res.writeHead(200)
-        return res.end(JSON.stringify(lista, null, 4))
-    }
     let filepath = path.join('static', url)
-    console.log(filepath)
     fs.readFile(filepath, function (err, data) {
         if (err) {
             res.writeHead(404)
@@ -115,6 +112,6 @@ function handleGet(req, res) {
         }
         res.setHeader("Content-Type", getMimeType(url))
         res.writeHead(200)
-        res.end(data)
+        return res.end(data)
     })
 }

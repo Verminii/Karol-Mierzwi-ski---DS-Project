@@ -41,18 +41,20 @@ export default {
       return "http://localhost:3000/covers/" + cover;
     },
     click: function (id) {
+      //cos z tym nie dziala
       fetch("http://localhost:3000/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ info: "NEXT", album: id }), //treść wysyłana
+        body: JSON.stringify({ info: "NEXT", album: 1 }), //treść wysyłana
       })
         .then((res) => res.json())
         .then((data) => {
-          this.albums = JSON.parse(data.dires);
-          this.covers = JSON.parse(data.covers);
-          this.songs = JSON.parse(data.files);
+          //dodać jeszcze settery
+          this.albums = data.dires;
+          this.covers = data.covers;
+          this.songs = data.files;
           console.log(data);
         });
     },
