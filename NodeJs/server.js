@@ -14,20 +14,21 @@ function getMimeType(url) {
     return _Mime_Type[path.extname(url).toLowerCase()] || "text/html"
 }
 var server = http.createServer(function (req, res) {
-    let info = "";
     switch (req.method) {
         case "GET":
             handleGet(req, res)
             break;
         case "POST":
-            req.on("data", function (data) {
-                info += data;
-            })
+            if (req.url === '/') {
+                let info = "";
+                req.on("data", function (data) {
+                    info += data;
+                })
 
-            req.on("end", function () {
-                info = JSON.parse(info)
-                console.log(info)
-                if (url === '/') {
+                req.on("end", function () {
+                    info = JSON.parse(info)
+                    console.log(info)
+
                     res.setHeader('Access-Control-Allow-Origin', '*')
                     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
                     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type')
@@ -36,8 +37,8 @@ var server = http.createServer(function (req, res) {
                     res.writeHead(200)
                     fileNames(info)
                     res.end(JSON.stringify(lista, null, 4))
-                }
-            })
+                })
+            }
             break;
     }
 })
@@ -99,6 +100,7 @@ function fileNames(info) {
 }
 
 function handleGet(req, res) {
+    //cos tutaj ogarnac
     let url = req.url
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
@@ -112,6 +114,6 @@ function handleGet(req, res) {
         }
         res.setHeader("Content-Type", getMimeType(url))
         res.writeHead(200)
-        return res.end(data)
+        res.end(data)
     })
 }
